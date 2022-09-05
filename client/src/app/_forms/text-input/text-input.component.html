@@ -1,0 +1,11 @@
+<div class="form-group">
+  <input [class.is-invalid]="ngControl.touched && ngControl.invalid" type={{type}} class="form-control"
+    [formControl]="ngControl.control" placeholder={{label}}>
+  <div *ngIf="ngControl.control.errors?.required" class="invalid-feedback">Informe {{label}}</div>
+  <div *ngIf="ngControl.control.errors?.minlength" class="invalid-feedback">Mínimo de
+    {{ngControl.control.errors.minlength['requiredLength']}} caracteres</div>
+  <div *ngIf="ngControl.control.errors?.maxlength" class="invalid-feedback">Máximo de
+    {{ngControl.control.errors.maxlength['requiredLength']}} caracteres</div>
+  <div *ngIf="(ngControl.control.errors && !ngControl.control.errors.required && ngControl.control.errors.isMatching)"
+    class="invalid-feedback">Campo não idêntico ao de confirmação</div>
+</div>
