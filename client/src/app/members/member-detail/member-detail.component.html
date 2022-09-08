@@ -16,13 +16,13 @@
         </div>
 
         <div>
-          <strong>Last Active:</strong>
-          <p>{{member.lastActive}}</p>
+          <strong>Último Acesso:</strong>
+          <p>{{member.lastActive | timeago}}</p>
         </div>
 
         <div>
-          <strong>Member since:</strong>
-          <p>{{member.created}}</p>
+          <strong>Membro desde:</strong>
+          <p>{{member.created | date : 'dd MMMM yyyy'}}</p>
         </div>
       </div>
 

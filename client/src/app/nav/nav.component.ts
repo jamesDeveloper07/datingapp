@@ -1,3 +1,4 @@
+import { MembersService } from './../_services/members.service';
 import { ToastrService } from 'ngx-toastr';
 import { User } from './../_models/user';
 import { AccountService } from './../_services/account.service';
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
 export class NavComponent implements OnInit {
   model: any = {};
 
-  constructor(public accountService: AccountService, private router: Router, private toastr: ToastrService) { }
+  constructor(public accountService: AccountService, private router: Router, private toastr: ToastrService, private memberService: MembersService) { }
 
   ngOnInit(): void {
   }
@@ -21,6 +22,8 @@ export class NavComponent implements OnInit {
   login() {
     this.accountService.login(this.model).subscribe(response => {
       this.router.navigateByUrl('/members');
+      this.toastr.success("Logado com sucesso");
+      this.memberService.updateCurrentUser();
     }, error => {
       console.log(error);
       // this.toastr.error(error.error);
