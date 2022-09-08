@@ -1,3 +1,4 @@
+import { LikeParams } from './../_models/likeParams';
 import { UserParams } from './../_models/userParams';
 import { PagionationResult } from './../_models/pagination';
 import { Member } from './../_models/member';
@@ -18,6 +19,7 @@ export class MembersService {
   memberCache = new Map();
   userParams: UserParams;
   user: User;
+  likeParams: LikeParams;
 
   constructor(private http: HttpClient, private accountService: AccountService) {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => {
@@ -91,6 +93,24 @@ export class MembersService {
     return this.http.delete(`${this.baseUrl}users/delete-photo/${photoId}`, {});
   }
 
+  addLike(username: string) {
+    return this.http.post(`${this.baseUrl}likes/${username}`, {});
+  }
+
+  getLikes(likeParams: LikeParams) {
+    let params = this.getPaginationHeaders(likeParams.pageNumber, likeParams.pageSize);
+    params = params.append('predicate', likeParams.predicate);
+
+    // return this.http.get<Partial<Member[]>>(`${this.baseUrl}likes?predicate=${predicate}`);
+
+    var url = this.baseUrl + 'likes';
+    return this.getPaginationResult<Member[]>(url, params)
+      .pipe(map(response => {
+        this.memberCache.set(Object.values(likeParams).join('-'), response);
+        return response;
+      }));
+
+  }
 
   private getPaginationResult<T>(url, params) {
     const paginationResult: PagionationResult<T> = new PagionationResult<T>();
@@ -114,7 +134,7 @@ export class MembersService {
     return params;
   }
 
-  updateCurrentUser(){
+  updateCurrentUser() {
     this.accountService.currentUser$.pipe(take(1)).subscribe(user => {
       this.user = user;
       this.userParams = new UserParams(user);
