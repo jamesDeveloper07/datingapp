@@ -48,7 +48,7 @@ namespace API.Controllers
 
             if (await _userRepository.SaveAllAsync()) return Ok();
 
-            return BadRequest("Fala ao curtir usuário");
+            return BadRequest("Falha ao curtir usuário");
         }
 
         [HttpGet]

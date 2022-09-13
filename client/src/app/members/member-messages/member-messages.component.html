@@ -1,0 +1,48 @@
+<!-- <p *ngFor="let message of messages">{{message?.content}}</p> -->
+<div class="card">
+  <div class="card-body">
+    <div *ngIf="messages?.length === 0">
+      Nenhuma mensagem ainda... Diga "Oi" na caixa de mensagem abaixo.
+    </div>
+
+    <ul class="chat" *ngIf="messages?.length > 0">
+      <li *ngFor="let message of messages">
+        <div>
+          <span class="chat-img float-right">
+            <img class="rounded-circle" src="{{message.senderPhotoUrl || './assets/user.png'}}"
+              alt="{{message.senderUsername}}">
+          </span>
+          <div class="chat-body">
+            <div class="header">
+              <small class="text-muded">
+                <span class="fa fa-clock-o"> {{message.messageSent | timeago}}</span>
+                <span class="text-danger" *ngIf="!message.dateRead
+                && message.senderUsername !== username">
+                  (Não Lida)
+                </span>
+                <span class="text-success" *ngIf="message.dateRead
+                && message.senderUsername !== username">
+                  (LIda {{message.dateRead | timeago}})
+                </span>
+              </small>
+            </div>
+            <p>{{message.content}}</p>
+          </div>
+        </div>
+
+      </li>
+    </ul>
+  </div>
+
+  <div class="card-footer">
+    <form #messageForm="ngForm" (ngSubmit)="sendMessage()" autocomplete="off">
+      <div class="input-group">
+        <input name="messageContent" [(ngModel)]="messageContent" required type="text" class="form-control input-sm" placeholder="Envie uma message privada...">
+        <div class="input-group-append">
+          <button [disabled]="!messageForm.valid" class="btn btn-primary" type="submit">Enviar</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+</div>
