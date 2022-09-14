@@ -14,7 +14,7 @@ import { getPaginationHeaders, getPaginationResult } from './paginationHelper';
   providedIn: 'root'
 })
 export class MembersService {
-  baseUrl = environment.apiUrl;
+  baseUrl = environment.apiUrl; 
   members: Member[] = [];
   memberCache = new Map();
   userParams: UserParams;
