@@ -1,22 +1,73 @@
+import { Group } from './../_models/group';
 import { MessageParams } from './../_models/messageParams';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AccountService } from './account.service';
 import { getPaginationHeaders, getPaginationResult } from './paginationHelper';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Message } from '../_models/message';
+import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+import { ToastrService } from 'ngx-toastr';
+import { User } from '../_models/user';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MessageService {
   baseUrl = environment.apiUrl;
-  messageParams: MessageParams;
+  hubUrl = environment.hubUrl;
+  private hubConnection: HubConnection;
+  private messageThreadSource = new BehaviorSubject<Message[]>([]);
+  messageThread$ = this.messageThreadSource.asObservable();
 
+  //messageParams: MessageParams;
 
-  constructor(private http: HttpClient, private accountService: AccountService) {
+  constructor(private http: HttpClient, private toastr: ToastrService) { }
 
+  createHubConnection(user: User, otherUsername: string) {
+    var url = this.hubUrl + 'message?user=' + otherUsername;
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl(url, {
+        accessTokenFactory: () => user.token
+      })
+      .withAutomaticReconnect()
+      .build()
+
+    this.hubConnection
+      .start()
+      .catch(error => console.log(error));
+
+    this.hubConnection.on('ReceiveMessageThread', message => {
+      this.messageThreadSource.next(message);
+    })
+
+    this.hubConnection.on('NewMessage', message => {
+      this.messageThread$.pipe(take(1)).subscribe(messages => {
+        this.messageThreadSource.next([...messages, message]);
+      })
+    })
+
+    this.hubConnection.on('UpdatedGroup', (group: Group) => {
+      if (group.connections.some(c => c.username === otherUsername)) {
+        this.messageThread$.pipe(take(1)).subscribe(messages => {
+          messages.forEach(message => {
+            if (!message.dateRead) {
+              message.dateRead = new Date(Date.now());
+            }
+          })
+          this.messageThreadSource.next([...messages]);
+        })
+      }
+    })
+
+  }
+
+  stopHubConnection() {
+    if (this.hubConnection) {
+      this.hubConnection.stop().catch(error => console.log(error));
+    }
   }
 
   getMessages(messageParams: MessageParams) {
@@ -31,10 +82,12 @@ export class MessageService {
     return this.http.get<Message[]>(url);
   }
 
-  sendMessage(username: string, content: string) {
+  async sendMessage(username: string, content: string) {
     var url = this.baseUrl + 'messages';
     var message = { recipientUsername: username, content }
-    return this.http.post<Message>(url, message);
+    //return this.http.post<Message>(url, message);
+    return this.hubConnection.invoke('SendMessage', message)
+      .catch(error => console.log(error));
   }
 
   deleteMessage(id: number) {
