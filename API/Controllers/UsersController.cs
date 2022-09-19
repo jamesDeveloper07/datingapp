@@ -49,7 +49,9 @@ namespace API.Controllers
         [HttpGet("{username}", Name = "GetUser")]
         public async Task<ActionResult<MemberDto>> GetUser(string username)
         {
-            return await _unitOfWork.UserRepository.GetMemberAsync(username);
+            var currentUsername = User.GetUsername();
+            var isCurrentUser = currentUsername == username;
+            return await _unitOfWork.UserRepository.GetMemberAsync(username, isCurrentUser);
         }
 
         [HttpPut]
@@ -76,11 +78,6 @@ namespace API.Controllers
             {
                 Url = result.SecureUrl.AbsoluteUri,
                 PublicId = result.PublicId
-            };
-
-            if (user.Photos.Count == 0)
-            {
-                photo.IsMain = true;
             };
 
             user.Photos.Add(photo);
@@ -116,7 +113,7 @@ namespace API.Controllers
             var user = await _unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
             var photo = user.Photos.FirstOrDefault(x => x.Id == photoId);
 
-            if (photo == null) return NotFound();
+            if (photo == null) return BadRequest("Foto não encontrada entre as aprovadas");
 
             if (photo.IsMain) return BadRequest("Não é possivel deletar uma foto principal");
 
