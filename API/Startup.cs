@@ -25,7 +25,7 @@ using API.SignalR;
 namespace API
 {
     public class Startup
-    {
+    { 
         private readonly IConfiguration _config;
         public Startup(IConfiguration config)
         {
