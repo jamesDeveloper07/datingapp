@@ -1,3 +1,4 @@
+import { BusyService } from './busy.service';
 import { Group } from './../_models/group';
 import { MessageParams } from './../_models/messageParams';
 import { HttpClient } from '@angular/common/http';
@@ -24,9 +25,10 @@ export class MessageService {
 
   //messageParams: MessageParams;
 
-  constructor(private http: HttpClient, private toastr: ToastrService) { }
+  constructor(private http: HttpClient, private toastr: ToastrService, private busyService: BusyService) { }
 
   createHubConnection(user: User, otherUsername: string) {
+    this.busyService.busy();
     var url = this.hubUrl + 'message?user=' + otherUsername;
     this.hubConnection = new HubConnectionBuilder()
       .withUrl(url, {
@@ -37,7 +39,8 @@ export class MessageService {
 
     this.hubConnection
       .start()
-      .catch(error => console.log(error));
+      .catch(error => console.log(error))
+      .finally(() => this.busyService.idle());
 
     this.hubConnection.on('ReceiveMessageThread', message => {
       this.messageThreadSource.next(message);
@@ -66,6 +69,7 @@ export class MessageService {
 
   stopHubConnection() {
     if (this.hubConnection) {
+      this.messageThreadSource.next([]);
       this.hubConnection.stop().catch(error => console.log(error));
     }
   }
