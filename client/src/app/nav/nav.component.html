@@ -1,10 +1,20 @@
-<nav class="navbar navbar-expand-md navbar-dark fixed-top bg-primary">
 
-  <div class="container" >
 
-      <a class="navbar-brand" routerLink="/">Netiz App</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
 
-      <ul class="navbar-nav me-auto">
+  <div class="container">
+
+    <a class="navbar-brand" routerLink="/">Netiz App</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
         <ng-container *ngIf="accountService.currentUser$ | async">
           <li class="nav-item">
             <a class="nav-link" routerLink="/members" routerLinkActive="active">Matches</a>
@@ -18,15 +28,17 @@
           <li *appHasRole="['Admin', 'Moderator']" class="nav-item">
             <a class="nav-link" routerLink="/admin" routerLinkActive="active">Admin</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/errors" routerLinkActive="active">Errors</a>
+          </li>
         </ng-container>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/errors" routerLinkActive="active">Errors</a>
-        </li>
+
       </ul>
 
-      <div class="dropdown" *ngIf="accountService.currentUser$ | async as user" dropdown>
+          <div class="dropdown" *ngIf="accountService.currentUser$ | async as user" dropdown>
         <img src="{{user.photoUrl || './assets/user.png'}}" alt="{{user.username}}">
-        <a class="dropdown-toggle text-light ms-2 text-decoration-none" dropdownToggle>Olá {{user.knownAs | titlecase}}</a>
+        <a class="dropdown-toggle text-light ms-2 text-decoration-none" dropdownToggle>Olá {{user.knownAs |
+          titlecase}}</a>
         <div class="dropdown-menu mt-3" *dropdownMenu>
           <a routerLink="/member/edit" class="dropdown-item">Editar Perfil</a>
           <div class="dropdown-divider"></div>
@@ -42,6 +54,12 @@
           placeholder="Password">
         <button class="btn btn-warning my-2 my-sm-0" type="submit">Login</button>
       </form>
+
+      <!-- navbar-collapse -->
     </div>
+
+
+    <!-- fim container -->
+  </div>
 
 </nav>

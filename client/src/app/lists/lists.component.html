@@ -1,12 +1,12 @@
 <div class="text-center mt-3">
-  <h2>{{likeParams.predicate === 'liked' ? 'Usuários que eu curto' : 'Usuários que me curtem'}}</h2>
+  <h2>{{likeParams.predicate === 'liked' ? 'Usuários que eu sigo' : 'Usuários que me seguem'}}</h2>
 </div>
 
 <div class="container mt-3">
   <div class="d-flex">
       <div class="btn-group" name="predicate">
-        <button class="btn btn-primary" btnRadio="liked" [(ngModel)]="likeParams.predicate" (click)="loadLikes()">Eu curto</button>
-        <button class="btn btn-primary" btnRadio="likedBy" [(ngModel)]="likeParams.predicate" (click)="loadLikes()">Me curtem</button>
+        <button class="btn btn-primary" btnRadio="liked" [(ngModel)]="likeParams.predicate" (click)="loadLikes()">Seguindo</button>
+        <button class="btn btn-primary" btnRadio="likedBy" [(ngModel)]="likeParams.predicate" (click)="loadLikes()">Seguidores</button>
       </div>
   </div>
 
